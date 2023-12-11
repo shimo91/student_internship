@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage })
 
-router.post('/upload',verifytoken, upload.single('file'), async function (req, res, next) {
+router.post('/upload', upload.single('file'), async function (req, res, next) {
 	console.log("inside upload");
 	const filename=req.file.filename
 	const username=req.body.username
