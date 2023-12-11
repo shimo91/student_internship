@@ -18,7 +18,7 @@ require('./config/dbConnection')
 
 // signup route
 const signupRoutes = require('./Routes/signupRoutes')
-app.use('/signup', signupRoutes)
+app.use('/api/signup', signupRoutes)
 
 const submissionRoutes = require('./Routes/googledocSubmissionRoutes');
 app.use(submissionRoutes);
