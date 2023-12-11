@@ -26,7 +26,7 @@ function verifytoken(req,res,next){
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-	  cb(null, './fileuploaded')
+	  cb(null, '/fileuploaded')
 	},
 	filename: function (req, file, cb) {
 	  const uniqueSuffix = Date.now()
