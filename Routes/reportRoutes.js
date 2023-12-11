@@ -3,6 +3,8 @@ const { default: mongoose } = require('mongoose');
 const router = express.Router()
 const multer = require('multer'); 
 require('../Models/FinalReport')
+const fs = require('fs');
+const uploadDirectory = './fileuploaded/';
 
 router.use("/file",express.static("fileuploaded"))
 const fileSchema = mongoose.model("reportdatas")
@@ -22,17 +24,20 @@ function verifytoken(req,res,next){
         res.status(401).send('Error')
     }
 }
-
+if (!fs.existsSync('./fileuploaded')) {
+	fs.mkdirSync('./fileuploaded');
+  }
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-	  cb(null, './fileuploaded/')
+	  cb(null, './fileuploaded')
 	},
 	filename: function (req, file, cb) {
 	  const uniqueSuffix = Date.now()
 	  cb(null, uniqueSuffix+file.originalname)
 	}
   })
+  
   
   const upload = multer({ storage: storage })
 
@@ -67,6 +72,13 @@ router.post('/upload', upload.single('file'), async function (req, res, next) {
 
 	}
   })
+  fs.access(uploadDirectory, fs.constants.W_OK, (err) => {
+	if (err) {
+	  console.error(`No write access to ${uploadDirectory}`);
+	} else {
+	  console.log(`Write access to ${uploadDirectory} is available`);
+	}
+})
 
 
  
