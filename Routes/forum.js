@@ -35,7 +35,7 @@ router.get('/get/:id',verifytoken,async(req,res)=>{
 
 
 
-router.get('/getUserlist/:id',verifytoken,async(req,res)=>{
+router.get('/getUserlist/:id',async(req,res)=>{
     try {
         const id=req.params.id;
        // console.log("userlist id :"+id);
