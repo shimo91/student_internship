@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const reportSchema = mongoose.Schema({
     
-    filename: {type: String},
+    link: {type: String},
     username: {type: String}
 })
 

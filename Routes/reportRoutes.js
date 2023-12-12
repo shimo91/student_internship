@@ -22,40 +22,59 @@ function verifytoken(req,res,next){
         res.status(401).send('Error')
     }
 }
+router.post('/upload', verifytoken, async function (req, res) {
+    const link = req.body.link; // Assuming the client sends the Google Document link in the request body
+	console.log('link'+link)
+
+    try {
+        const username = req.body.username;
+        const existingUser = await fileSchema.findOne({ username: username });
+
+        if (existingUser) {
+            return res.json({ status: "error", message: "Username already exists" });
+        }
+
+        await fileSchema.create({ link: link, username: username });
+        res.send({ status: "ok" });
+    } catch (error) {
+        console.error(error);
+        res.json({ status: "error" });
+    }
+});
 
 
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-	  cb(null, './fileuploaded')
-	},
-	filename: function (req, file, cb) {
-	  const uniqueSuffix = Date.now()
-	  cb(null, uniqueSuffix+file.originalname)
-	}
-  })
+// const storage = multer.diskStorage({
+// 	destination: function (req, file, cb) {
+// 	  cb(null, './fileuploaded')
+// 	},
+// 	filename: function (req, file, cb) {
+// 	  const uniqueSuffix = Date.now()
+// 	  cb(null, uniqueSuffix+file.originalname)
+// 	}
+//   })
   
-  const upload = multer({ storage: storage })
+//   const upload = multer({ storage: storage })
 
-router.post('/upload', upload.single('file'), async function (req, res, next) {
-	console.log("inside upload");
-	const filename=req.file.filename
-	const username=req.body.username
+// router.post('/upload',verifytoken, upload.single('file'), async function (req, res, next) {
+	
+// 	const filename=req.file.filename
+// 	const username=req.body.username
 
-	try{
-		const existingUser = await fileSchema.findOne({ username: username });
+// 	try{
+// 		const existingUser = await fileSchema.findOne({ username: username });
 
-		if (existingUser) {
-			return res.json({ status: "error", message: "Username already exists" });
-		}
-		await fileSchema.create({ filename: filename, username: username });
-		res.send({ status: "ok" });
-		// fileSchema.create({filename:filename,username:username})
-		// res.send({status : "ok"})
-	}catch(error){
-		res.json({status: "error"})
+// 		if (existingUser) {
+// 			return res.json({ status: "error", message: "Username already exists" });
+// 		}
+// 		await fileSchema.create({ filename: filename, username: username });
+// 		res.send({ status: "ok" });
+// 		// fileSchema.create({filename:filename,username:username})
+// 		// res.send({status : "ok"})
+// 	}catch(error){
+// 		res.json({status: "error"})
 
-	}
-  })
+// 	}
+//   })
 
   router.get('/filedata',verifytoken,async(req,res)=>{
 	try{
