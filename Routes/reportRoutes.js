@@ -3,6 +3,8 @@ const { default: mongoose } = require('mongoose');
 const router = express.Router()
 const multer = require('multer'); 
 require('../Models/FinalReport')
+const fs = require('fs');
+const uploadDirectory = './fileuploaded/';
 
 router.use("/file",express.static("fileuploaded"))
 const fileSchema = mongoose.model("reportdatas")
@@ -86,6 +88,13 @@ router.post('/upload', verifytoken, async function (req, res) {
 
 	}
   })
+  fs.access(uploadDirectory, fs.constants.W_OK, (err) => {
+	if (err) {
+	  console.error(`No write access to ${uploadDirectory}`);
+	} else {
+	  console.log(`Write access to ${uploadDirectory} is available`);
+	}
+})
 
 
  
