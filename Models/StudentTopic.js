@@ -10,9 +10,8 @@ const topicShema=mongoose.Schema({
       project_image: {
         type: String 
       },
-      project_status: {
-        type: Boolean
-      }
+     
+     
     });
 
 const StudentTopic=mongoose.model('students',topicShema);

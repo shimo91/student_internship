@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Weekdata = require('../Models/Weekdata.js');
+const UserData = require('../Models/UserData');
 
 // ... (other middleware and functions)
 
@@ -10,7 +11,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 5, // Limit file size to 5 MB
+    fileSize: 1024 * 1024 * 9, // Limit file size to 5 MB
   },
 });
 
@@ -24,33 +25,46 @@ function verifytoken(req,res,next){
         let payload=jwt.verify(token,'yourSecretKey');
         if(!payload) throw 'Unauthorized';
         //res.status(200).send(payload);
+        req.authUser = payload;
         next();
     } catch (error) {
         res.status(401).send('Error')
     }
 }
 
-router.post('/upload',verifytoken, upload.single('file'), async (req, res) => {
+router.post('/upload', verifytoken, upload.single('file'), async (req, res) => {
     if (!req.file) {
       return res.status(400).send('No file uploaded');
     }
   
     try {
-      // Create a new document in Weekdata model to store file information
+      const userEmail = req.authUser.username;
+      const user = await UserData.findOne({ username: userEmail });
+  
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+  
+      const existingSubmission = await Weekdata.findOne({ userid: user._id, week1Submitted: true });
+  
+      if (existingSubmission) {
+        return res.status(403).send('Week 1 already submitted');
+      }
+  
       const newFile = new Weekdata({
         file: {
-          data: req.file.buffer, // Store the file buffer
-          contentType: req.file.mimetype, // Store the file's MIME type
-          originalName: req.file.originalname, // Store the original filename
+          data: req.file.buffer,
+          contentType: req.file.mimetype,
+          originalName: req.file.originalname,
         },
+        userid: user._id,
+        week1Submitted: true,
         // Add other fields related to the uploaded file or report if needed
         // ...
       });
   
-      // Save the file data into the database
       await newFile.save();
   
-      // Sending a success message back to the client
       return res.status(200).send('File uploaded successfully and processed.');
     } catch (error) {
       console.error('Error:', error);
@@ -59,7 +73,82 @@ router.post('/upload',verifytoken, upload.single('file'), async (req, res) => {
   });
   
 
- 
+router.post('/week2', verifytoken, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+      return res.status(400).send('No file uploaded');
+  }
+
+  try {
+      // Extract the user email from the authenticated user's data
+      const userEmail = req.authUser.username;
+       // Assuming email is stored in 'username' field of authUser
+console.log(userEmail);
+      // Find the user based on the extracted email or username
+      const user = await UserData.findOne({ username: userEmail });
+
+      console.log("fetched user",user);
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+
+     
+
+      const newFile = new Weekdata({
+          file: {
+              data: req.file.buffer,
+              contentType: req.file.mimetype,
+              originalName: req.file.originalname,
+          },
+          userid: user._id, 
+        
+          week2Submitted: true,
+      });
+
+      await newFile.save();
+      
+      return res.status(200).send('File uploaded successfully and processed.');
+  } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).send('Failed to upload file.');
+  }
+});
+
+router.post('/week3', verifytoken, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+      return res.status(400).send('No file uploaded');
+  }
+
+  try {
+      // Extract the user email from the authenticated user's data
+      const userEmail = req.authUser.username;
+       // Assuming email is stored in 'username' field of authUser
+console.log(userEmail);
+      // Find the user based on the extracted email or username
+      const user = await UserData.findOne({ username: userEmail });
+
+      console.log("fetched user",user);
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+
+      const newFile = new Weekdata({
+          file: {
+              data: req.file.buffer,
+              contentType: req.file.mimetype,
+              originalName: req.file.originalname,
+          },
+          userid: user._id, 
+          week3Submitted: true,
+      });
+
+      await newFile.save();
+      
+      return res.status(200).send('File uploaded successfully and processed.');
+  } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).send('Failed to upload file.');
+  }
+});
 
 router.get('/submission/:id',verifytoken, async (req, res) => {
   try 
@@ -78,6 +167,7 @@ router.get('/submission/:id',verifytoken, async (req, res) => {
       res.status(404).send('Error!!');
   }
 })
+
 
 
 

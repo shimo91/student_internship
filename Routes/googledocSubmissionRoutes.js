@@ -24,12 +24,12 @@ function verifytoken(req,res,next){
 // module.exports = router;
 
 
-
+// const express = require('express');
 const { submitForm, getVivavoce} = require('../controllers/GoogledocSubmissionController');
 
 const router = express.Router();
 
-router.post('/api/googledoclinksubmit',verifytoken, submitForm);
-router.post('/api/getvivavoce',verifytoken, getVivavoce);
+router.post('/api/googledoclinksubmit', verifytoken,submitForm);
+router.post('/api/getvivavoce', verifytoken,getVivavoce);
 
 module.exports = router;

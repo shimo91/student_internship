@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema; 
 const userSchema = mongoose.Schema({
+    
     username: {
         type:String,
         required: true,
@@ -19,13 +21,13 @@ const userSchema = mongoose.Schema({
     },
     phone: {
         type: String
-    },
-    topic_status: {
-        type: Boolean
+    
     },
     topic_id: {
-        type: String
-    },
+        type: Schema.Types.ObjectId,
+        ref: 'students', 
+        unique: true// Reference the 'students' collection
+      },
     start_date: {
         type: Date
     },
@@ -58,7 +60,11 @@ const userSchema = mongoose.Schema({
     },
     viva_cmnts:{
         type: String
-    }
+    },
+    topic_status: {
+        type: Boolean,
+        default: false, 
+      },
 })
 
 const UserData = mongoose.model('userdatas',userSchema)

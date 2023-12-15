@@ -3,8 +3,6 @@ const { default: mongoose } = require('mongoose');
 const router = express.Router()
 const multer = require('multer'); 
 require('../Models/FinalReport')
-const fs = require('fs');
-const uploadDirectory = './fileuploaded/';
 
 router.use("/file",express.static("fileuploaded"))
 const fileSchema = mongoose.model("reportdatas")
@@ -45,39 +43,6 @@ router.post('/upload', verifytoken, async function (req, res) {
 });
 
 
-// const storage = multer.diskStorage({
-// 	destination: function (req, file, cb) {
-// 	  cb(null, './fileuploaded')
-// 	},
-// 	filename: function (req, file, cb) {
-// 	  const uniqueSuffix = Date.now()
-// 	  cb(null, uniqueSuffix+file.originalname)
-// 	}
-//   })
-  
-//   const upload = multer({ storage: storage })
-
-// router.post('/upload',verifytoken, upload.single('file'), async function (req, res, next) {
-	
-// 	const filename=req.file.filename
-// 	const username=req.body.username
-
-// 	try{
-// 		const existingUser = await fileSchema.findOne({ username: username });
-
-// 		if (existingUser) {
-// 			return res.json({ status: "error", message: "Username already exists" });
-// 		}
-// 		await fileSchema.create({ filename: filename, username: username });
-// 		res.send({ status: "ok" });
-// 		// fileSchema.create({filename:filename,username:username})
-// 		// res.send({status : "ok"})
-// 	}catch(error){
-// 		res.json({status: "error"})
-
-// 	}
-//   })
-
   router.get('/filedata',verifytoken,async(req,res)=>{
 	try{
 		fileSchema.find({}).then((data)=>{
@@ -88,13 +53,6 @@ router.post('/upload', verifytoken, async function (req, res) {
 
 	}
   })
-  fs.access(uploadDirectory, fs.constants.W_OK, (err) => {
-	if (err) {
-	  console.error(`No write access to ${uploadDirectory}`);
-	} else {
-	  console.log(`Write access to ${uploadDirectory} is available`);
-	}
-})
 
 
  

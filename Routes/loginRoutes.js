@@ -17,6 +17,7 @@ function verifytoken(req,res,next){
         if(!token) throw 'Unauthorized';
         let payload=jwt.verify(token,'yourSecretKey');
         if(!payload) throw 'Unauthorized';
+        req.authUser=payload;
         //res.status(200).send(payload);
         next();
     } catch (error) {
@@ -56,7 +57,7 @@ router.post('/', async (req, res) => {
                 var topicstatus = user.topic_status
                 const std_name=user.first_name+" "+user.last_name;
                 // Generate token with a unique identifier (e.g., user ID)
-                let payload = { username: username, password: password ,userid : user._id,stdname : std_name,topicstatus:topicstatus};
+                let payload = { username: username, password: password ,userid : user._id,stdname : std_name,topicstatus:topicstatus,  };
                 const token = jwt.sign(payload, 'yourSecretKey');
     
                 // Send success response with token
@@ -91,7 +92,19 @@ router.get('/getuser/:id',verifytoken,async(req,res)=>{
     }
 })
 
-
+router.post('/updateStatus',verifytoken,async(req,res)=>{
+    try {
+        const tokenChange = req.body;
+        console.log("token change :"+tokenChange.topicstatus);
+        console.log("user change :"+tokenChange.username);
+        let payload = tokenChange ;
+        const token = jwt.sign(payload, 'yourSecretKey');
+        res.status(200).json({ message: 'success', token});
+    } catch (error) {
+        console.log("error is :"+error)
+        res.status(400).send(error);
+    }
+})
 
 
 module.exports = router;
